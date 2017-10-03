@@ -39,7 +39,7 @@ public class Client {
             Socket socket = new Socket(serverHost, serverPort);
             Thread.sleep(1000);
 
-            ServerThread serverThread = new ServerThread(socket, userName);
+            ClientThread serverThread = new ClientThread(socket, userName);
             Thread serverAccessThread = new Thread(serverThread);
             serverAccessThread.start();
             while (serverAccessThread.isAlive()) {

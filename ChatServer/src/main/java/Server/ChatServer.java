@@ -11,7 +11,7 @@ public class ChatServer {
     private static final int portNumber = 4444;
 
     private int serverPort;
-    private List<ClientThread> clients;
+    private List<ServerThread> clients;
 
     public static void main(String[] args) {
         ChatServer server = new ChatServer(portNumber);
@@ -22,12 +22,12 @@ public class ChatServer {
         this.serverPort = portNumber;
     }
 
-    public List<ClientThread> getClients() {
+    public List<ServerThread> getClients() {
         return clients;
     }
 
     private void startServer() {
-        clients = new ArrayList<ClientThread>();
+        clients = new ArrayList<ServerThread>();
         ServerSocket serverSocket = null;
         try {
             serverSocket = new ServerSocket(serverPort);
@@ -45,7 +45,7 @@ public class ChatServer {
             try {
                 Socket socket = serverSocket.accept();
                 System.out.println("accepts : " + socket.getRemoteSocketAddress());
-                ClientThread client = new ClientThread(this, socket);
+                ServerThread client = new ServerThread(this, socket);
                 Thread thread = new Thread(client);
                 thread.start();
                 clients.add(client);

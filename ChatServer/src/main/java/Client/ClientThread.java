@@ -5,14 +5,14 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Scanner;
 
-public class ServerThread implements Runnable {
+public class ClientThread implements Runnable {
 
     private Socket socket;
     private String userName;
     private final LinkedList<String> messagesToSend;
     private boolean hasMessages = false;
 
-    public ServerThread(Socket socket, String userName) {
+    public ClientThread(Socket socket, String userName) {
         this.socket = socket;
         this.userName = userName;
         messagesToSend = new LinkedList<String>();
