@@ -58,4 +58,23 @@ public class ChatServer {
     public void removeClient(ServerThread st){
         clients.remove(st);
     }
+
+    
+    public String toStringClientList()
+    {
+        String clientlist = "CLIENTLIST:";
+        for (int i = 0; i < clients.size(); i++)
+        {
+            if (i==clients.size()-1){
+               clientlist+=clients.get(i).getClientName(); 
+            }else{
+               clientlist+=clients.get(i).getClientName()+","; 
+            }
+           
+        }
+        
+        return clientlist;
+    }
+    
+    
 }

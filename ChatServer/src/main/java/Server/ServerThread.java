@@ -32,11 +32,20 @@ public class ServerThread implements Runnable {
                     String input = in.nextLine();
                     if (input.toUpperCase().startsWith("LOGIN:")) {
                         clientName = input.substring(6);
+                        input=server.toStringClientList();
+                        for (ServerThread thatClient : server.getClients()) {
+                                    PrintWriter thatClientOut = thatClient.getWriter();
+                                    if (thatClientOut != null) {
+                                        thatClientOut.write(input + "\r\n");
+                                        thatClientOut.flush();
+                                    }
+                        }
+                        
                     } else if (input.startsWith("MSG:*")) {
                         for (ServerThread thatClient : server.getClients()) {
                             PrintWriter thatClientOut = thatClient.getWriter();
                             if (thatClientOut != null) {
-                                thatClientOut.write(input + "\r\n");
+                                thatClientOut.write("MSGRES:"+clientName+":"+input + "\r\n");
                                 thatClientOut.flush();
                             }
                         }
@@ -51,7 +60,7 @@ public class ServerThread implements Runnable {
                                 if (thatClient.getClientName().equals(receiver)) {
                                     PrintWriter thatClientOut = thatClient.getWriter();
                                     if (thatClientOut != null) {
-                                        thatClientOut.write(input + "\r\n");
+                                        thatClientOut.write("MSGRES:"+clientName+":"+input + "\r\n");
                                         thatClientOut.flush();
                                     }
                                 }
@@ -59,6 +68,14 @@ public class ServerThread implements Runnable {
                         }
                     }else if(input.toUpperCase().startsWith("LOGOUT:")){
                         server.removeClient(this);
+                        input=server.toStringClientList();
+                        for (ServerThread thatClient : server.getClients()) {
+                                    PrintWriter thatClientOut = thatClient.getWriter();
+                                    if (thatClientOut != null) {
+                                        thatClientOut.write(input + "\r\n");
+                                        thatClientOut.flush();
+                                    }
+                        }
                         break;
                     } else {
                         clientOut.println(clientName + ", command not found");
