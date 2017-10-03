@@ -49,7 +49,11 @@ public class ClientThread implements Runnable {
                         nextSend = messagesToSend.pop();
                         hasMessages = !messagesToSend.isEmpty();
                     }
-                    serverOut.println(userName + " > " + nextSend);
+                   // serverOut.println(userName + " > " + nextSend);
+                   serverOut.println(nextSend);
+                   if(nextSend.toUpperCase().startsWith("LOGOUT")){
+                       System.exit(0);
+                   }
                     serverOut.flush();
                 }
             }

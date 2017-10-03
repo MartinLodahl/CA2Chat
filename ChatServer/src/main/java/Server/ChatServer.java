@@ -54,4 +54,8 @@ public class ChatServer {
             }
         }
     }
+    
+    public void removeClient(ServerThread st){
+        clients.remove(st);
+    }
 }

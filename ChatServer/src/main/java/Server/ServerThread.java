@@ -10,6 +10,7 @@ public class ServerThread implements Runnable {
     private Socket socket;
     private PrintWriter clientOut;
     private ChatServer server;
+    private String clientName;
 
     public ServerThread(ChatServer server, Socket socket) {
         this.server = server;
@@ -29,17 +30,47 @@ public class ServerThread implements Runnable {
             while (!socket.isClosed()) {
                 if (in.hasNextLine()) {
                     String input = in.nextLine();
-                    for (ServerThread thatClient : server.getClients()) {
-                        PrintWriter thatClientOut = thatClient.getWriter();
-                        if (thatClientOut != null) {
-                            thatClientOut.write(input + "\r\n");
-                            thatClientOut.flush();
+                    if (input.toUpperCase().startsWith("LOGIN:")) {
+                        clientName = input.substring(6);
+                    } else if (input.startsWith("MSG:*")) {
+                        for (ServerThread thatClient : server.getClients()) {
+                            PrintWriter thatClientOut = thatClient.getWriter();
+                            if (thatClientOut != null) {
+                                thatClientOut.write(input + "\r\n");
+                                thatClientOut.flush();
+                            }
                         }
+                    } else if (input.toUpperCase().startsWith("MSG:")) {
+                        //MSG: NAMES : MESSAGE
+                        String[] semiSplit = input.split(":");
+                        String[] receivers = semiSplit[1].split(",");
+                        input = semiSplit[2];
+                        for (ServerThread thatClient : server.getClients()) {
+                            for (int i = 0; i < receivers.length; i++) {
+                                String receiver = receivers[i];
+                                if (thatClient.getClientName().equals(receiver)) {
+                                    PrintWriter thatClientOut = thatClient.getWriter();
+                                    if (thatClientOut != null) {
+                                        thatClientOut.write(input + "\r\n");
+                                        thatClientOut.flush();
+                                    }
+                                }
+                            }
+                        }
+                    }else if(input.toUpperCase().startsWith("LOGOUT:")){
+                        server.removeClient(this);
+                        break;
+                    } else {
+                        clientOut.println(clientName + ", command not found");
                     }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getClientName() {
+        return clientName;
     }
 }
