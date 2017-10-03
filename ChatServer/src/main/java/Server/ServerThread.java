@@ -30,6 +30,8 @@ public class ServerThread implements Runnable {
             while (!socket.isClosed()) {
                 if (in.hasNextLine()) {
                     String input = in.nextLine();
+                    /* retrive the client name, and send a list containing all the connected
+                    clients. */
                     if (input.toUpperCase().startsWith("LOGIN:")) {
                         clientName = input.substring(6);
                         input=server.toStringClientList();
@@ -41,15 +43,20 @@ public class ServerThread implements Runnable {
                                     }
                         }
                         
-                    } else if (input.startsWith("MSG:*")) {
+                    }
+                    // Sends a message to all the active clients.
+                    else if (input.toUpperCase().startsWith("MSG:*")) {
                         for (ServerThread thatClient : server.getClients()) {
                             PrintWriter thatClientOut = thatClient.getWriter();
+                            String [] message = input.split(":");
                             if (thatClientOut != null) {
-                                thatClientOut.write("MSGRES:"+clientName+":"+input + "\r\n");
+                                thatClientOut.write("MSGRES:"+clientName+":"+message[2] + "\r\n");
                                 thatClientOut.flush();
                             }
                         }
-                    } else if (input.toUpperCase().startsWith("MSG:")) {
+                    } 
+                    // Sends a message to the clients which are parsed in as parameter
+                    else if (input.toUpperCase().startsWith("MSG:")) {
                         //MSG: NAMES : MESSAGE
                         String[] semiSplit = input.split(":");
                         String[] receivers = semiSplit[1].split(",");
