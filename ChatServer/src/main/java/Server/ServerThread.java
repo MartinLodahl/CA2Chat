@@ -64,7 +64,7 @@ public class ServerThread implements Runnable {
                         for (ServerThread thatClient : server.getClients()) {
                             for (int i = 0; i < receivers.length; i++) {
                                 String receiver = receivers[i];
-                                if (thatClient.getClientName().equals(receiver)) {
+                                if (thatClient.getClientName().toUpperCase().equals(receiver.toUpperCase())) {
                                     PrintWriter thatClientOut = thatClient.getWriter();
                                     if (thatClientOut != null) {
                                         thatClientOut.write("MSGRES:"+clientName+":"+input + "\r\n");
