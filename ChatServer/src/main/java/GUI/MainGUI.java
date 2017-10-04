@@ -1,6 +1,5 @@
 package GUI;
 
-import Client.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -11,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,6 +24,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import sun.audio.AudioPlayer;
 
 public class MainGUI {
 
@@ -45,11 +46,16 @@ public class MainGUI {
     private int serverPort;
     private Socket socket;
     private ExecutorService es;
-    
+    private ArrayBlockingQueue<String> msgSend;
+    private ArrayBlockingQueue<String> msgRecived;
 
     public MainGUI() throws IOException {
-        es = Executors.newFixedThreadPool(2);
+        serverHost = host;
+        serverPort = portNumber;
         socket = new Socket(serverHost, serverPort);
+        es = Executors.newFixedThreadPool(2);
+        msgSend = new ArrayBlockingQueue(5);
+        msgRecived = new ArrayBlockingQueue(5);
     }
 
     public static void main(String[] args) {
@@ -84,7 +90,6 @@ public class MainGUI {
         GridBagConstraints preLeft = new GridBagConstraints();
         preLeft.anchor = GridBagConstraints.WEST;
         preLeft.insets = new Insets(0, 10, 0, 10);
-        // preRight.weightx = 2.0;
         preRight.fill = GridBagConstraints.HORIZONTAL;
         preRight.gridwidth = GridBagConstraints.REMAINDER;
 
@@ -174,8 +179,9 @@ public class MainGUI {
             if (username.length() < 1) {
                 JOptionPane.showMessageDialog(null, "Please type a username...");
             } else {
-                es.execute(new ClientThread(socket, username));
-                
+                Thread t1 = new Thread(new receiveGui(socket, mainGUI));
+                es.execute(t1);
+                es.execute(new sendGui(socket, msgSend));
                 preFrame.setVisible(false);
                 display();
             }
