@@ -40,7 +40,13 @@ public class ClientThread implements Runnable {
             while (!socket.isClosed()) {
                 if (serverInStream.available() > 0) {
                     if (serverIn.hasNextLine()) {
-                        System.out.println(serverIn.nextLine());
+                        String serverOutput = serverIn.nextLine();
+                        if(serverOutput.startsWith("MSGRES")){
+                            String[] serverOutputSplit = serverOutput.split(":");
+                            serverOutput = serverOutputSplit[1];
+                            serverOutput +=" : "+ serverOutputSplit[2];
+                        }
+                        System.out.println(serverOutput);
                     }
                 }
                 if (hasMessages) {
