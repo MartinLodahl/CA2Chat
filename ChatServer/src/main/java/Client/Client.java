@@ -6,8 +6,8 @@ import java.util.Scanner;
 
 public class Client {
 
-    private static final String host = "127.0.0.1";
-    private static final int portNumber = 6666;
+    private static final String host = "0.0.0.0";
+    private static final int portNumber = 6000;
 
     private String userName;
     private String serverHost;

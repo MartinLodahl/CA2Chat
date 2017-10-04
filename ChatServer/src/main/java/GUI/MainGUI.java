@@ -9,12 +9,15 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -32,11 +35,21 @@ public class MainGUI {
     JTextArea chatBox;
     JTextField usernameChooser;
     JFrame preFrame;
-    
-    private ExecutorService es = Executors.newCachedThreadPool();
 
-    public MainGUI() {
-        es.execute(new ClientThreadGUI());
+    //fix later
+    private static final String host = "127.0.0.1";
+    private static final int portNumber = 6666;
+
+    String username;
+    private String serverHost;
+    private int serverPort;
+    private Socket socket;
+    private ExecutorService es;
+    
+
+    public MainGUI() throws IOException {
+        es = Executors.newFixedThreadPool(2);
+        socket = new Socket(serverHost, serverPort);
     }
 
     public static void main(String[] args) {
@@ -46,11 +59,12 @@ public class MainGUI {
                 try {
                     UIManager.setLookAndFeel(UIManager
                             .getSystemLookAndFeelClassName());
+
+                    MainGUI mainGUI = new MainGUI();
+                    mainGUI.preDisplay();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                MainGUI mainGUI = new MainGUI();
-                mainGUI.preDisplay();
             }
         });
     }
@@ -153,15 +167,15 @@ public class MainGUI {
         }
     }
 
-    String username;
-
     class enterServerButtonListener implements ActionListener {
 
         public void actionPerformed(ActionEvent event) {
             username = usernameChooser.getText();
             if (username.length() < 1) {
-                System.out.println("No!");
+                JOptionPane.showMessageDialog(null, "Please type a username...");
             } else {
+                es.execute(new ClientThread(socket, username));
+                
                 preFrame.setVisible(false);
                 display();
             }
