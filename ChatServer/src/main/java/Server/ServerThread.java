@@ -32,30 +32,28 @@ public class ServerThread implements Runnable {
                     String input = in.nextLine();
                     /* retrive the client name, and send a list containing all the connected
                     clients. */
-                    if (input.toUpperCase().startsWith("LOGIN:") && clientName==null) {
+                    if (input.toUpperCase().startsWith("LOGIN:") && clientName == null) {
                         clientName = input.substring(6);
-                        input=server.toStringClientList();
-                        for (ServerThread thatClient : server.getClients()) {
-                                    PrintWriter thatClientOut = thatClient.getWriter();
-                                    if (thatClientOut != null) {
-                                        thatClientOut.write(input + "\r\n");
-                                        thatClientOut.flush();
-                                    }
-                        }
-                        
-                    }
-                    // Sends a message to all the active clients.
-                    else if (input.toUpperCase().startsWith("MSG:*")) {
+                        input = server.toStringClientList();
                         for (ServerThread thatClient : server.getClients()) {
                             PrintWriter thatClientOut = thatClient.getWriter();
-                            String [] message = input.split(":");
                             if (thatClientOut != null) {
-                                thatClientOut.write("MSGRES:"+clientName+":"+message[2] + "\r\n");
+                                thatClientOut.write(input + "\r\n");
                                 thatClientOut.flush();
                             }
                         }
-                    } 
-                    // Sends a message to the clients which are parsed in as parameter
+
+                    } // Sends a message to all the active clients.
+                    else if (input.toUpperCase().startsWith("MSG:*")) {
+                        for (ServerThread thatClient : server.getClients()) {
+                            PrintWriter thatClientOut = thatClient.getWriter();
+                            String[] message = input.split(":");
+                            if (thatClientOut != null) {
+                                thatClientOut.write("MSGRES:" + clientName + ":" + message[2] + "\r\n");
+                                thatClientOut.flush();
+                            }
+                        }
+                    } // Sends a message to the clients which are parsed in as parameter
                     else if (input.toUpperCase().startsWith("MSG:")) {
                         //MSG: NAMES : MESSAGE
                         String[] semiSplit = input.split(":");
@@ -67,21 +65,21 @@ public class ServerThread implements Runnable {
                                 if (thatClient.getClientName().toUpperCase().equals(receiver.toUpperCase())) {
                                     PrintWriter thatClientOut = thatClient.getWriter();
                                     if (thatClientOut != null) {
-                                        thatClientOut.write("MSGRES:"+clientName+":"+input + "\r\n");
+                                        thatClientOut.write("MSGRES:" + clientName + ":" + input + "\r\n");
                                         thatClientOut.flush();
                                     }
                                 }
                             }
                         }
-                    }else if(input.toUpperCase().startsWith("LOGOUT:")){
+                    } else if (input.toUpperCase().startsWith("LOGOUT:")) {
                         server.removeClient(this);
-                        input=server.toStringClientList();
+                        input = server.toStringClientList();
                         for (ServerThread thatClient : server.getClients()) {
-                                    PrintWriter thatClientOut = thatClient.getWriter();
-                                    if (thatClientOut != null) {
-                                        thatClientOut.write(input + "\r\n");
-                                        thatClientOut.flush();
-                                    }
+                            PrintWriter thatClientOut = thatClient.getWriter();
+                            if (thatClientOut != null) {
+                                thatClientOut.write(input + "\r\n");
+                                thatClientOut.flush();
+                            }
                         }
                         break;
                     } else {
