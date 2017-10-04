@@ -5,21 +5,23 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class ChatServer {
 
-    private static final int portNumber = 4444;
-
     private int serverPort;
+    private final int minPortValue = 6000;
+    private final int maxPortValue = 6999;
+    private boolean validPort = false;
     private List<ServerThread> clients;
 
     public static void main(String[] args) {
-        ChatServer server = new ChatServer(portNumber);
+        ChatServer server = new ChatServer();
+        server.selectPort(); 
         server.startServer();
     }
 
-    public ChatServer(int portNumber) {
-        this.serverPort = portNumber;
+    public ChatServer() {
     }
 
     public List<ServerThread> getClients() {
@@ -35,6 +37,17 @@ public class ChatServer {
         } catch (IOException e) {
             System.err.println("Could not listen on port: " + serverPort);
             System.exit(1);
+        }
+    }
+
+    private void selectPort() {
+        while (!validPort) {
+            System.out.println("Enter a port number between: " + minPortValue + " - " + maxPortValue);
+            Scanner sc = new Scanner(System.in);
+            serverPort = sc.nextInt();
+            if (serverPort >= minPortValue && serverPort <= maxPortValue) {
+                validPort = true;
+            }
         }
     }
 
@@ -54,27 +67,23 @@ public class ChatServer {
             }
         }
     }
-    
-    public void removeClient(ServerThread st){
+
+    public void removeClient(ServerThread st) {
         clients.remove(st);
     }
 
-    
-    public String toStringClientList()
-    {
+    public String toStringClientList() {
         String clientlist = "CLIENTLIST:";
-        for (int i = 0; i < clients.size(); i++)
-        {
-            if (i==clients.size()-1){
-               clientlist+=clients.get(i).getClientName(); 
-            }else{
-               clientlist+=clients.get(i).getClientName()+","; 
+        for (int i = 0; i < clients.size(); i++) {
+            if (i == clients.size() - 1) {
+                clientlist += clients.get(i).getClientName();
+            } else {
+                clientlist += clients.get(i).getClientName() + ",";
             }
-           
+
         }
-        
+
         return clientlist;
     }
-    
-    
+
 }
