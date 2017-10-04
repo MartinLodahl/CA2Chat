@@ -1,38 +1,25 @@
-package Gui;
+package GUI;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
-import java.util.LinkedList;
 import java.util.Scanner;
 
-public class receiveGui implements Runnable {
+public class receiver implements Runnable{
 
-    private Socket socket;
-    private String userName;
-    private final LinkedList<String> messagesToSend;
-    private boolean hasMessages = false;
+private Socket socket;
     private MainGUI gui;
 
-    public receiveGui(Socket socket, MainGUI gui) {
+    public receiver(Socket socket, MainGUI gui) {
         this.gui = gui;
         this.socket = socket;
-        messagesToSend = new LinkedList<String>();
-    }
-
-    public void addNextMessage(String message) {
-        synchronized (messagesToSend) {
-            hasMessages = true;
-            messagesToSend.push(message);
-        }
     }
 
     @Override
     public void run() {
         System.out.println("Local Port :" + socket.getLocalPort());
         System.out.println("Server = " + socket.getRemoteSocketAddress() + ":" + socket.getPort());
-
         try {
-            PrintWriter serverOut = new PrintWriter(socket.getOutputStream(), false);
             InputStream serverInStream = socket.getInputStream();
             Scanner serverIn = new Scanner(serverInStream);
 
@@ -47,4 +34,5 @@ public class receiveGui implements Runnable {
             ex.printStackTrace();
         }
     }
+    
 }

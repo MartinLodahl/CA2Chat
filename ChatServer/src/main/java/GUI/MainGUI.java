@@ -8,10 +8,16 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -30,6 +36,27 @@ public class MainGUI {
     JTextField usernameChooser;
     JFrame preFrame;
 
+    //fix later
+    private static final String host = "127.0.0.1";
+    private static final int portNumber = 6666;
+
+    String username;
+    private String serverHost;
+    private int serverPort;
+    private Socket socket;
+    private ExecutorService es;
+    private ArrayBlockingQueue<String> msgSend;
+    private ArrayBlockingQueue<String> msgRecived;
+
+    public MainGUI() throws IOException {
+        serverHost = host;
+        serverPort = portNumber;
+        socket = new Socket(serverHost, serverPort);
+        es = Executors.newFixedThreadPool(2);
+        msgSend = new ArrayBlockingQueue(5);
+        msgRecived = new ArrayBlockingQueue(5);
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -37,11 +64,12 @@ public class MainGUI {
                 try {
                     UIManager.setLookAndFeel(UIManager
                             .getSystemLookAndFeelClassName());
+
+                    MainGUI mainGUI = new MainGUI();
+                    mainGUI.preDisplay();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                MainGUI mainGUI = new MainGUI();
-                mainGUI.preDisplay();
             }
         });
     }
@@ -61,7 +89,6 @@ public class MainGUI {
         GridBagConstraints preLeft = new GridBagConstraints();
         preLeft.anchor = GridBagConstraints.WEST;
         preLeft.insets = new Insets(0, 10, 0, 10);
-        // preRight.weightx = 2.0;
         preRight.fill = GridBagConstraints.HORIZONTAL;
         preRight.gridwidth = GridBagConstraints.REMAINDER;
 
@@ -145,16 +172,17 @@ public class MainGUI {
         }
     }
 
-    String username;
-
     class enterServerButtonListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent event) {
             username = usernameChooser.getText();
             if (username.length() < 1) {
-                System.out.println("No!");
+                JOptionPane.showMessageDialog(null, "Please type a username...");
             } else {
+                Thread t1 = new Thread(new receiver(socket, mainGUI));
+                es.execute(t1);
+                es.execute(new sendGui(socket, msgSend));
                 preFrame.setVisible(false);
                 display();
             }
