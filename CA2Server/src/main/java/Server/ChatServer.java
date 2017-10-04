@@ -11,18 +11,14 @@ import java.util.concurrent.Executors;
 
 public class ChatServer {
 
-    private int serverPort;
+    private int serverPort = 8081;
     private final int minPortValue = 6000;
     private final int maxPortValue = 6999;
     private boolean validPort = false;
     private List<ServerThread> clients;
     
-    private Socket clientSocket;
-    ExecutorService es = Executors.newCachedThreadPool();
-
     public static void main(String[] args) {
         ChatServer server = new ChatServer();
-        server.selectPort(); 
         server.startServer();
     }
 
@@ -61,18 +57,12 @@ public class ChatServer {
         System.out.println("server starts port = " + serverSocket.getLocalSocketAddress());
         while (true) {
             try {
-                /*Socket socket = serverSocket.accept();
-                System.out.println("accepts : " + socket.getRemoteSocketAddress());
+                Socket socket = serverSocket.accept();
+                System.out.println("User connect: " + socket.getRemoteSocketAddress());
                 ServerThread client = new ServerThread(this, socket);
                 Thread thread = new Thread(client);
                 thread.start();
-                clients.add(client);*/
-                
-                clientSocket = serverSocket.accept();
-                ServerThread st = new ServerThread(this, clientSocket);
-                clients.add(st);
-                es.execute(st);
-                
+                clients.add(client);
             } catch (IOException ex) {
                 System.out.println("Accept failed on : " + serverPort);
             }
@@ -80,6 +70,7 @@ public class ChatServer {
     }
 
     public void removeClient(ServerThread st) {
+        System.out.println("User disconnect: " + st.getClientIP());
         clients.remove(st);
     }
 

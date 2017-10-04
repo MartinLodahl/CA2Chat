@@ -91,6 +91,10 @@ public class ServerThread implements Runnable {
             e.printStackTrace();
         }
     }
+    
+    public String getClientIP(){
+        return "" + socket.getRemoteSocketAddress();
+    }
 
     public String getClientName() {
         return clientName;
