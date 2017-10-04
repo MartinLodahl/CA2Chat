@@ -1,15 +1,16 @@
-package Gui;
+package GUI;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class receiveGui implements Runnable {
+public class receiver implements Runnable{
 
-    private Socket socket;
+private Socket socket;
     private MainGUI gui;
 
-    public receiveGui(Socket socket, MainGUI gui) {
+    public receiver(Socket socket, MainGUI gui) {
         this.gui = gui;
         this.socket = socket;
     }
@@ -33,4 +34,5 @@ public class receiveGui implements Runnable {
             ex.printStackTrace();
         }
     }
+    
 }

@@ -180,7 +180,7 @@ public class MainGUI {
             if (username.length() < 1) {
                 JOptionPane.showMessageDialog(null, "Please type a username...");
             } else {
-                Thread t1 = new Thread(new receiveGui(socket, mainGUI));
+                Thread t1 = new Thread(new receiver(socket, mainGUI));
                 es.execute(t1);
                 es.execute(new sendGui(socket, msgSend));
                 preFrame.setVisible(false);
