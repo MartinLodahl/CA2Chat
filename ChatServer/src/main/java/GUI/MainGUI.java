@@ -118,9 +118,13 @@ public class MainGUI {
         newFrame.setSize(470, 300);
         newFrame.setVisible(true);
     }
-    
-    public void updateChatBox(String username, String msg){
-        chatBox.append("<"+username+">"+"<"+msg+"> /r/n");
+
+    public void updateChatBox(String username, String msg) {
+        chatBox.append("<" + username + ">" + "<" + msg + "> /r/n");
+    }
+
+    public void updateChatBox(String msg) {
+        chatBox.append("<" + username + ">" + "<" + msg + "> /r/n");
     }
 
     class sendMessageButtonListener implements ActionListener {
