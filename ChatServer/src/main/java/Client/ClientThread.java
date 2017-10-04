@@ -36,7 +36,7 @@ public class ClientThread implements Runnable {
             PrintWriter serverOut = new PrintWriter(socket.getOutputStream(), false);
             InputStream serverInStream = socket.getInputStream();
             Scanner serverIn = new Scanner(serverInStream);
-
+            serverOut.println("LOGIN:"+userName);
             while (!socket.isClosed()) {
                 if (serverInStream.available() > 0) {
                     if (serverIn.hasNextLine()) {

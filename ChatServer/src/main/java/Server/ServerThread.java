@@ -32,7 +32,7 @@ public class ServerThread implements Runnable {
                     String input = in.nextLine();
                     /* retrive the client name, and send a list containing all the connected
                     clients. */
-                    if (input.toUpperCase().startsWith("LOGIN:")) {
+                    if (input.toUpperCase().startsWith("LOGIN:") && clientName==null) {
                         clientName = input.substring(6);
                         input=server.toStringClientList();
                         for (ServerThread thatClient : server.getClients()) {
