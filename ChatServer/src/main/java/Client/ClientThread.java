@@ -36,7 +36,7 @@ public class ClientThread implements Runnable {
             PrintWriter serverOut = new PrintWriter(socket.getOutputStream(), false);
             InputStream serverInStream = socket.getInputStream();
             Scanner serverIn = new Scanner(serverInStream);
-            serverOut.println("LOGIN:"+userName);
+            serverOut.println("LOGIN:" + userName);
             while (!socket.isClosed()) {
                 if (serverInStream.available() > 0) {
                     if (serverIn.hasNextLine()) {
@@ -49,12 +49,12 @@ public class ClientThread implements Runnable {
                         nextSend = messagesToSend.pop();
                         hasMessages = !messagesToSend.isEmpty();
                     }
-                   // serverOut.println(userName + " > " + nextSend);
-                   serverOut.println(nextSend);
-                   if(nextSend.toUpperCase().startsWith("LOGOUT")){
-                       System.exit(0);
-                   }
+                    // serverOut.println(userName + " > " + nextSend);
+                    serverOut.println(nextSend);
                     serverOut.flush();
+                    if (nextSend.toUpperCase().startsWith("LOGOUT")) {
+                        System.exit(0);
+                    }
                 }
             }
         } catch (IOException ex) {

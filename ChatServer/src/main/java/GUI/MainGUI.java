@@ -24,7 +24,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import sun.audio.AudioPlayer;
 
 public class MainGUI {
 
@@ -157,6 +156,7 @@ public class MainGUI {
 
     class sendMessageButtonListener implements ActionListener {
 
+        @Override
         public void actionPerformed(ActionEvent event) {
             if (messageBox.getText().length() < 1) {
                 // do nothing
@@ -174,6 +174,7 @@ public class MainGUI {
 
     class enterServerButtonListener implements ActionListener {
 
+        @Override
         public void actionPerformed(ActionEvent event) {
             username = usernameChooser.getText();
             if (username.length() < 1) {
