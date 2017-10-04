@@ -13,6 +13,8 @@ import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -166,7 +168,15 @@ public class MainGUI {
             } else {
                 chatBox.append("<" + username + ">:  " + messageBox.getText()
                         + "\n");
+                
+                try {
+                    msgSend.put(messageBox.getText());
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
                 messageBox.setText("");
+                
             }
             messageBox.requestFocusInWindow();
         }
@@ -180,8 +190,7 @@ public class MainGUI {
             if (username.length() < 1) {
                 JOptionPane.showMessageDialog(null, "Please type a username...");
             } else {
-                Thread t1 = new Thread(new receiver(socket, mainGUI));
-                es.execute(t1);
+                es.execute(new receiver(socket, mainGUI));
                 es.execute(new sendGui(socket, msgSend));
                 preFrame.setVisible(false);
                 display();

@@ -31,9 +31,10 @@ public class sendGui implements Runnable {
                 nextSend = messagesToSend.take();
                 serverOut.println(nextSend);
                 serverOut.flush();
-
+                
+                System.out.println("send a msg!");
+                
                 if (nextSend.toUpperCase().startsWith("LOGOUT")) {
-                    serverOut.flush();
                     System.exit(0);
                 }
             } catch (InterruptedException ex) {
