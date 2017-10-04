@@ -5,7 +5,7 @@
  */
 package Client;
 
-import Gui.MainGUI;
+import GUI.MainGUI;
 
 /**
  *

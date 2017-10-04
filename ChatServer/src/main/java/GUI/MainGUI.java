@@ -129,6 +129,7 @@ public class MainGUI {
 
     class sendMessageButtonListener implements ActionListener {
 
+        @Override
         public void actionPerformed(ActionEvent event) {
             if (messageBox.getText().length() < 1) {
                 // do nothing
@@ -148,6 +149,7 @@ public class MainGUI {
 
     class enterServerButtonListener implements ActionListener {
 
+        @Override
         public void actionPerformed(ActionEvent event) {
             username = usernameChooser.getText();
             if (username.length() < 1) {
