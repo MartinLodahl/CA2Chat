@@ -1,5 +1,6 @@
 package GUI;
 
+import Client.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -8,6 +9,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -29,6 +32,12 @@ public class MainGUI {
     JTextArea chatBox;
     JTextField usernameChooser;
     JFrame preFrame;
+    
+    private ExecutorService es = Executors.newCachedThreadPool();
+
+    public MainGUI() {
+        es.execute(new ClientThreadGUI());
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
