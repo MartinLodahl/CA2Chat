@@ -5,7 +5,7 @@
  */
 package Client;
 
-import GUI.MainGUI;
+import Gui.MainGUI;
 
 /**
  *
@@ -16,8 +16,6 @@ public class ClientThreadGUI {
         
         MainGUI mg = new MainGUI();
         mg.display();
-        mg.updateChatBox("Bob", "Hej");
-        mg.updateChatBox("boB", "Jeh");
         
     }
 }
