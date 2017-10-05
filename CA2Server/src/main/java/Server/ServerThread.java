@@ -1,18 +1,16 @@
 package Server;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class ServerThread implements Runnable {
 
     private Socket socket;
     private PrintWriter clientOut;
     private ChatServer server;
-    private String clientName;
+    private String clientName = "guest";
     private BufferedReader in;
 
     public ServerThread(ChatServer server, Socket socket) {
@@ -29,12 +27,12 @@ public class ServerThread implements Runnable {
         try {
             this.clientOut = new PrintWriter(socket.getOutputStream(), false);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
+            
             while (true) {
                 String input = in.readLine();
                 /* retrive the client name, and send a list containing all the connected
                     clients. */
-                if (input.toUpperCase().startsWith("LOGIN:") && clientName == null) {
+                if (input.toUpperCase().startsWith("LOGIN:") && clientName.equals("guest")) {
                     clientName = input.substring(6);
                     System.out.println("user IP: " + socket.getRemoteSocketAddress() + " changed name to: " + clientName);
                     input = server.toStringClientList();
