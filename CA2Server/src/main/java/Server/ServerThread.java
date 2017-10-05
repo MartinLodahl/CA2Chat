@@ -27,11 +27,23 @@ public class ServerThread implements Runnable {
         try {
             this.clientOut = new PrintWriter(socket.getOutputStream(), false);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            
+
             while (true) {
                 String input = in.readLine();
+                System.out.println("User IP: " + socket.getRemoteSocketAddress() + " Debugging: " + input);
                 /* retrive the client name, and send a list containing all the connected
                     clients. */
+                if (input.toUpperCase().startsWith("CLIENTS:")) {
+                    input = server.toStringClientList();
+                    for (ServerThread thatClient : server.getClients()) {
+                        PrintWriter thatClientOut = thatClient.getWriter();
+                        if (thatClientOut != null) {
+                            thatClientOut.write(input + "\r\n");
+                            thatClientOut.flush();
+                        }
+                    }
+                }
+
                 if (input.toUpperCase().startsWith("LOGIN:") && clientName.equals("guest")) {
                     clientName = input.substring(6);
                     System.out.println("user IP: " + socket.getRemoteSocketAddress() + " changed name to: " + clientName);
@@ -43,7 +55,6 @@ public class ServerThread implements Runnable {
                             thatClientOut.flush();
                         }
                     }
-
                 } // Sends a message to all the active clients.
                 else if (input.toUpperCase().startsWith("MSG:*:")) {
                     String[] message = input.split(":", 3);
