@@ -22,7 +22,7 @@ public class sendGui implements Runnable {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        serverOut.println("login:"+username);
+        serverOut.println("LOGIN:"+username);
         serverOut.flush();
     }
 
@@ -33,7 +33,7 @@ public class sendGui implements Runnable {
                 nextSend = messagesToSend.take();
                
                 if(!nextSend.contains(":")){
-                    nextSend = "msg:*:" + nextSend;
+                    nextSend = "MSG:*:" + nextSend;
                 }
                 
                 serverOut.println(nextSend);

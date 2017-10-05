@@ -14,10 +14,21 @@ and open the template in the editor.
         <div>
             <h1>Dokumentation</h1>
             <div>
+                <h2>Tests</h2>
+                <img src="testModAndenServerGUI.png"> <br>
+                <a>The test went well, without any markable problems, <br> the chat protocol was correctly implemented at tayzin.tk <br>
+                    the biggest problem we found in our GUI, was that msg and login was in lowercase, instead of uppercase <br>
+                    because our server is uppercasing by itself. So we didn't think it could break the chat protocol <br>
+                    before testing up against another server. </a>
+            </div>
+            <div>
+
+
+
                 <h2>How you designed the system</h2>
                 <a>The main system is divided into 3 major parts. We have the server, client and GUI. <br>
 
-                    <br>The server which can be found in … consist of 2 classes. The first class is called “ChatServer”, this can be located in the package Server. <br>
+                    <br>The server which can be found</a> <a href="https://github.com/MartinLodahl/CA2Chat/tree/master/CA2Server"> here</a><a><br> consist of 2 classes. The first class is called “ChatServer”, this can be located in the package Server. <br>
                     This class is the main server, it performs 2 tasks.<br>
                     The first task is to start the server at port 8081. The second task is to listen for clients that might connect to the server and assign a socket-Thread to each client.<br>
                     By assigning a new socket-thread to each client, the server is able to handle multiple clients at once.<br>
@@ -39,21 +50,21 @@ and open the template in the editor.
             </div>
             <div>
                 <h2>How to use the system</h2>
-            <p>How to use the system:</p>
-            <p>Download our chat client (GUI), write a name, and you're started</p>
-            <p>You can type 'msg:<*names*>:message', to type to specific people.</p>
-            <p>Otherwise you can just type something in, and the GUI will tell the server to write to all</p>
-            <p>Type logout: to logout</p>
+                <p>How to use the system:</p>
+                <p>Download our chat client (GUI), write a name, and you're started</p>
+                <p>You can type 'msg:<*names*>:message', to type to specific people.</p>
+                <p>Otherwise you can just type something in, and the GUI will tell the server to write to all</p>
+                <p>Type logout: to logout</p>
 
-            <p>Without our GUI, you can call login:<*username*>, to set your name, note you can only do it once per client</p>
-            <p>You can write MSG:<*receivers*>:<*message*>, where you're splitting receivers by ','s. You can write to one, many or use '*' to write to all</p>
-            <p>You'll receive answers from the server in the format MSGRES:<*sender*>:<*message*>.</p>
-            <p>You'll get a client list everytime a person logs off or on the server.</p>
-            <p>Type 'logout:' to logout from the server </p>
-
-            <a href="https://github.com/MartinLodahl/CA2Chat/tree/master/CA2Server">Chat Server</a><br>
-            <a href="https://github.com/MartinLodahl/CA2Chat/tree/master/ChatServer/src/main/java/Client">Client Code</a><br>
-            <a href="https://github.com/MartinLodahl/CA2Chat/tree/master/ChatServer/src/main/java/GUI">Client GUI</a><br>
+                <p>Without our GUI, you can call login:<*username*>, to set your name, note you can only do it once per client</p>
+                <p>You can write MSG:<*receivers*>:<*message*>, where you're splitting receivers by ','s. You can write to one, many or use '*' to write to all</p>
+                <p>You'll receive answers from the server in the format MSGRES:<*sender*>:<*message*>.</p>
+                <p>You'll get a client list everytime a person logs off or on the server.</p>
+                <p>Type 'logout:' to logout from the server </p>
+                <h2>Git links</h2>
+                <a href="https://github.com/MartinLodahl/CA2Chat/tree/master/CA2Server">Chat Server</a><br>
+                <a href="https://github.com/MartinLodahl/CA2Chat/tree/master/ChatServer/src/main/java/Client">Client Code</a><br>
+                <a href="https://github.com/MartinLodahl/CA2Chat/tree/master/ChatServer/src/main/java/GUI">Client GUI</a><br>
             </div>
         </div>
     </body>
