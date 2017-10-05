@@ -38,6 +38,9 @@ public class ReceiverGUI implements Runnable {
                             case "MSGRES":
                                 gui.updateChatBox("<" + inputSplit[1] + ">" + inputSplit[2]);
                                 break;
+                            case "CLIENTLIST":
+                                gui.updateOnlineList(inputSplit[1]);
+                                break;
                             default:
                                 gui.updateChatBox(input);
                                 break;

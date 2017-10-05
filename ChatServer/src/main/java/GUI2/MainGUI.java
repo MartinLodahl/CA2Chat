@@ -5,7 +5,17 @@
  */
 package GUI2;
 
+import GUI.receiver;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -13,11 +23,38 @@ import java.util.ArrayList;
  */
 public class MainGUI extends javax.swing.JFrame {
 
+    private MainGUI mainGui;
+    private String username;
+
+    private Socket socket;
+    private ExecutorService es;
+    private ArrayBlockingQueue<String> msgSend;
+
+    private ReceiverGUI receiver;
+    private SendGUI sender;
+
+    private ArrayList<String> receiverClients = new ArrayList();
+    private ArrayList<String> onlineClients = new ArrayList();
+
     /**
      * Creates new form tester
      */
     public MainGUI() {
+        mainGui = this;
         initComponents();
+    }
+
+    private void connect(String serverHost, int serverPort) {
+        try {
+            socket = new Socket(serverHost, serverPort);
+        } catch (IOException ex) {
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        es = Executors.newFixedThreadPool(2);
+        msgSend = new ArrayBlockingQueue(5);
+
+        es.execute(new ReceiverGUI(socket, this));
+        es.execute(new SendGUI(socket, msgSend, username));
     }
 
     /**
@@ -37,19 +74,24 @@ public class MainGUI extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         chatBox = new javax.swing.JTextArea();
         jPanel3 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        currentConectionInfoLabel = new javax.swing.JLabel();
+        currentConLabel = new javax.swing.JLabel();
         connectBtn = new javax.swing.JButton();
+        DisconnectBtn = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         onlineList = new javax.swing.JList<>();
-        jLabel1 = new javax.swing.JLabel();
+        onlineListLabel = new javax.swing.JLabel();
         plusListBtn = new javax.swing.JButton();
         minusListBtn = new javax.swing.JButton();
         clearListBtn = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
+        receiverListLabel = new javax.swing.JLabel();
         jScrollPane5 = new javax.swing.JScrollPane();
         receiverList = new javax.swing.JList<>();
+        hostLabel = new javax.swing.JLabel();
+        hostField = new javax.swing.JTextField();
+        portLabel = new javax.swing.JLabel();
+        portField = new javax.swing.JTextField();
 
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -85,9 +127,7 @@ public class MainGUI extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane4)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(msgBox, javax.swing.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -97,8 +137,8 @@ public class MainGUI extends javax.swing.JFrame {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane4)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 417, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(msgBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -106,14 +146,22 @@ public class MainGUI extends javax.swing.JFrame {
                 .addGap(10, 10, 10))
         );
 
-        jLabel3.setText("Current connection:");
+        currentConectionInfoLabel.setText("Current connection:");
 
-        jLabel2.setText("jLabel2");
+        currentConLabel.setText("N/A");
 
         connectBtn.setText("Connect");
         connectBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 connectBtnActionPerformed(evt);
+            }
+        });
+
+        DisconnectBtn.setText("Disconnect");
+        DisconnectBtn.setEnabled(false);
+        DisconnectBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DisconnectBtnActionPerformed(evt);
             }
         });
 
@@ -123,32 +171,37 @@ public class MainGUI extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(connectBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(4, 4, 4)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addContainerGap(90, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(DisconnectBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+                    .addComponent(connectBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(17, 17, 17)
+                        .addComponent(currentConectionInfoLabel))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(currentConLabel)))
+                .addContainerGap(115, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel2)
-                    .addComponent(connectBtn))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(connectBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(DisconnectBtn))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(currentConectionInfoLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(currentConLabel)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        onlineList.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         jScrollPane1.setViewportView(onlineList);
 
-        jLabel1.setText("Online :");
+        onlineListLabel.setText("Online :");
 
         plusListBtn.setText("+");
         plusListBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -171,7 +224,7 @@ public class MainGUI extends javax.swing.JFrame {
             }
         });
 
-        jLabel4.setText("Receivers:");
+        receiverListLabel.setText("Receivers:");
 
         jScrollPane5.setViewportView(receiverList);
 
@@ -186,8 +239,8 @@ public class MainGUI extends javax.swing.JFrame {
                     .addComponent(jScrollPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel4)
+                            .addComponent(onlineListLabel)
+                            .addComponent(receiverListLabel)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(plusListBtn)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -200,7 +253,7 @@ public class MainGUI extends javax.swing.JFrame {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jLabel1)
+                .addComponent(onlineListLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -209,18 +262,45 @@ public class MainGUI extends javax.swing.JFrame {
                     .addComponent(minusListBtn)
                     .addComponent(clearListBtn))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4)
+                .addComponent(receiverListLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
                 .addContainerGap())
         );
+
+        hostLabel.setText("host/ip:");
+
+        hostField.setText("www.alfen.me");
+        hostField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hostFieldActionPerformed(evt);
+            }
+        });
+
+        portLabel.setText("Port:");
+
+        portField.setEditable(false);
+        portField.setText("8081");
+        portField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                portFieldActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(hostLabel)
+                    .addComponent(portLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(portField)
+                    .addComponent(hostField))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -231,29 +311,69 @@ public class MainGUI extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(hostLabel)
+                            .addComponent(hostField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(portLabel)
+                            .addComponent(portField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 16, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addContainerGap(18, Short.MAX_VALUE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void msgBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_msgBoxActionPerformed
-        
+
     }//GEN-LAST:event_msgBoxActionPerformed
 
     private void sendBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendBtnActionPerformed
-        
+        StringBuilder tempReceiver = new StringBuilder();
+        String msg = msgBox.getText();
+
+        if (msg.toUpperCase().startsWith("LOGOUT:")) {
+            DisconnectBtnActionPerformed(evt);
+            return;
+        } else if (msg.toUpperCase().startsWith("LOGIN:")) {
+
+        } else {
+            for (String client : receiverClients) {
+                tempReceiver.append(client + ",");
+            }
+            if (tempReceiver.length() >= 1) {
+                tempReceiver.substring(0, tempReceiver.length() - 2);
+            } else {
+                tempReceiver.append("*");
+            }
+        }
+        try {
+            if (tempReceiver.length() >= 1) {
+                msgSend.put(tempReceiver + ":" + msg);
+            } else {
+                msgSend.put(msg);
+            }
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        msgBox.setText("");
     }//GEN-LAST:event_sendBtnActionPerformed
 
     private void connectBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectBtnActionPerformed
-        
+
+        username = JOptionPane.showInputDialog("Please enter a username: ");
+
+        connect(hostField.getText(), Integer.parseInt(portField.getText()));
+        currentConLabel.setText(hostField.getText() + ":" + portField.getText());
+        DisconnectBtn.setEnabled(true);
     }//GEN-LAST:event_connectBtnActionPerformed
 
     private void plusListBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusListBtnActionPerformed
@@ -271,11 +391,37 @@ public class MainGUI extends javax.swing.JFrame {
     private void clearListBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearListBtnActionPerformed
         clearReceiverList();
     }//GEN-LAST:event_clearListBtnActionPerformed
-    
-    private ArrayList<String> receiverClients = new ArrayList();
-    private ArrayList<String> onlineClients = new ArrayList();
 
-    private void updateOnlineList(String clients) {
+    private void hostFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hostFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_hostFieldActionPerformed
+
+    private void portFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_portFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_portFieldActionPerformed
+
+    private void DisconnectBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DisconnectBtnActionPerformed
+        DisconnectBtn.setEnabled(false);
+
+        try {
+            socket.close();
+            Thread.sleep(100);
+        } catch (IOException ex) {
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (es.shutdownNow().size() >= 1) {
+            System.exit(0);
+        }
+        socket = null;
+        es = null;
+        clearOnlineList();
+        clearReceiverList();
+    }//GEN-LAST:event_DisconnectBtnActionPerformed
+
+    public void updateOnlineList(String clients) {
         String[] tempClientList = clients.split(",");
         onlineClients = new ArrayList();
         for (String client : tempClientList) {
@@ -284,20 +430,25 @@ public class MainGUI extends javax.swing.JFrame {
         onlineList.setListData(onlineClients.toArray(new String[onlineClients.size()]));
         removeDcedClientsReceiver();
     }
-    
-    private void removeDcedClientsReceiver(){
+
+    private void removeDcedClientsReceiver() {
         for (String name : receiverClients) {
-            if(!onlineClients.contains(name)){
+            if (!onlineClients.contains(name)) {
                 removeReceiver(name);
             }
         }
     }
-    
-    private void clearReceiverList(){
+
+    private void clearOnlineList() {
+        onlineClients = new ArrayList();
+        onlineList.setListData(onlineClients.toArray(new String[onlineClients.size()]));
+    }
+
+    private void clearReceiverList() {
         receiverClients = new ArrayList();
         receiverList.setListData(receiverClients.toArray(new String[receiverClients.size()]));
     }
-    
+
     private void removeReceiver(String name) {
         receiverClients.remove(name);
         receiverList.setListData(receiverClients.toArray(new String[receiverClients.size()]));
@@ -318,9 +469,9 @@ public class MainGUI extends javax.swing.JFrame {
         }
         return false;
     }
-    
-    public void updateChatBox(String msg){
-        // add code here
+
+    public void updateChatBox(String msg) {
+        chatBox.append(msg + "\n");
     }
 
     /**
@@ -359,16 +510,18 @@ public class MainGUI extends javax.swing.JFrame {
                 new MainGUI().setVisible(true);
             }
         });
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton DisconnectBtn;
     private javax.swing.JTextArea chatBox;
     private javax.swing.JButton clearListBtn;
     private javax.swing.JButton connectBtn;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel currentConLabel;
+    private javax.swing.JLabel currentConectionInfoLabel;
+    private javax.swing.JTextField hostField;
+    private javax.swing.JLabel hostLabel;
     private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -380,8 +533,12 @@ public class MainGUI extends javax.swing.JFrame {
     private javax.swing.JButton minusListBtn;
     private javax.swing.JTextField msgBox;
     private javax.swing.JList<String> onlineList;
+    private javax.swing.JLabel onlineListLabel;
     private javax.swing.JButton plusListBtn;
+    private javax.swing.JTextField portField;
+    private javax.swing.JLabel portLabel;
     private javax.swing.JList<String> receiverList;
+    private javax.swing.JLabel receiverListLabel;
     private javax.swing.JButton sendBtn;
     // End of variables declaration//GEN-END:variables
 }
