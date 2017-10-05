@@ -6,8 +6,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ChatServer {
 
@@ -70,7 +68,7 @@ public class ChatServer {
     }
 
     public void removeClient(ServerThread st) {
-        System.out.println("User disconnect: " + st.getClientIP());
+        System.out.println("User disconnect IP: " + st.getClientIP()  + " Name: " + st.getClientName());
         clients.remove(st);
     }
 
