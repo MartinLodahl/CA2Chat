@@ -47,7 +47,7 @@ public class ServerThread implements Runnable {
                 } // Sends a message to all the active clients.
                 else if (input.toUpperCase().startsWith("MSG:*:")) {
                     String[] message = input.split(":", 3);
-                    System.out.println(socket.getRemoteSocketAddress() + " <" + clientName + "> sent message to all: " + message[2]);
+                    System.out.println("User IP: " + socket.getRemoteSocketAddress() + " <" + clientName + "> sent message to all: " + message[2]);
                     for (ServerThread thatClient : server.getClients()) {
                         PrintWriter thatClientOut = thatClient.getWriter();
                         if (thatClientOut != null) {
@@ -68,7 +68,7 @@ public class ServerThread implements Runnable {
                                 if (thatClient.getClientName().toUpperCase().equals(receiver.toUpperCase())) {
                                     PrintWriter thatClientOut = thatClient.getWriter();
                                     if (thatClientOut != null) {
-                                        System.out.println(socket.getRemoteSocketAddress() + " <" + clientName + "> whispers <" + receiver + ">: " + input);
+                                        System.out.println("User IP: " + socket.getRemoteSocketAddress() + " <" + clientName + "> whispers <" + receiver + ">: " + input);
                                         thatClientOut.write("MSGRES:" + clientName + ":" + input + "\r\n");
                                         thatClientOut.flush();
                                     }
