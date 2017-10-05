@@ -34,6 +34,7 @@ public class ServerThread implements Runnable {
                     clients. */
                     if (input.toUpperCase().startsWith("LOGIN:") && clientName == null) {
                         clientName = input.substring(6);
+                        System.out.println("user IP: " + socket.getRemoteSocketAddress() + " changed name to: " + clientName);
                         input = server.toStringClientList();
                         for (ServerThread thatClient : server.getClients()) {
                             PrintWriter thatClientOut = thatClient.getWriter();
@@ -89,10 +90,20 @@ public class ServerThread implements Runnable {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            server.removeClient(this);
+            String clientListDisconnect = server.toStringClientList();
+            for (ServerThread thatClient : server.getClients()) {
+                PrintWriter thatClientOut = thatClient.getWriter();
+                if (thatClientOut != null) {
+                    thatClientOut.write(clientListDisconnect + "\r\n");
+                    thatClientOut.flush();
+                }
+            }
         }
     }
-    
-    public String getClientIP(){
+
+    public String getClientIP() {
         return "" + socket.getRemoteSocketAddress();
     }
 
