@@ -45,10 +45,10 @@ public class ServerThread implements Runnable {
                         }
 
                     } // Sends a message to all the active clients.
-                    else if (input.toUpperCase().startsWith("MSG:*")) {
+                    else if (input.toUpperCase().startsWith("MSG:*:")) {
                         for (ServerThread thatClient : server.getClients()) {
                             PrintWriter thatClientOut = thatClient.getWriter();
-                            String[] message = input.split(":");
+                            String[] message = input.split(":",3);
                             if (thatClientOut != null) {
                                 thatClientOut.write("MSGRES:" + clientName + ":" + message[2] + "\r\n");
                                 thatClientOut.flush();
@@ -57,7 +57,8 @@ public class ServerThread implements Runnable {
                     } // Sends a message to the clients which are parsed in as parameter
                     else if (input.toUpperCase().startsWith("MSG:")) {
                         //MSG: NAMES : MESSAGE
-                        String[] semiSplit = input.split(":");
+                        String[] semiSplit = input.split(":",3);
+                        if(semiSplit.length == 3){
                         String[] receivers = semiSplit[1].split(",");
                         input = semiSplit[2];
                         for (ServerThread thatClient : server.getClients()) {
@@ -72,6 +73,11 @@ public class ServerThread implements Runnable {
                                 }
                             }
                         }
+                        }
+                        else{
+                           clientOut.write("MSGRES:SERVER: The message format is incorrect. \r\n");
+                           clientOut.flush(); 
+                        }
                     } else if (input.toUpperCase().startsWith("LOGOUT:")) {
                         server.removeClient(this);
                         input = server.toStringClientList();
@@ -84,7 +90,7 @@ public class ServerThread implements Runnable {
                         }
                         break;
                     } else {
-                        clientOut.println(clientName + ", command not found");
+                        clientOut.println("MSGRES:SERVER: The message format is incorrect. ");
                     }
                 }
             }
