@@ -319,8 +319,8 @@ public class MainGUI extends javax.swing.JFrame {
         return false;
     }
     
-    private void updateChatBox(String msg){
-        
+    public void updateChatBox(String msg){
+        // add code here
     }
 
     /**

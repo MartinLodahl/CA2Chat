@@ -22,7 +22,7 @@ public class sendGui implements Runnable {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        serverOut.println("LOGIN:"+username);
+        serverOut.println("LOGIN:" + username);
         serverOut.flush();
     }
 
@@ -31,8 +31,8 @@ public class sendGui implements Runnable {
         while (!socket.isClosed()) {
             try {
                 nextSend = messagesToSend.take();
-                
-                switch(nextSend.split(":")[0].toUpperCase()){
+
+                switch (nextSend.split(":")[0].toUpperCase()) {
                     case "LOGOUT":
                     case "LOGIN":
                     case "MSG":
@@ -41,10 +41,10 @@ public class sendGui implements Runnable {
                         nextSend = "MSG:" + nextSend;
                         break;
                 }
-                
+
                 serverOut.println(nextSend);
                 serverOut.flush();
-                
+
                 if (nextSend.toUpperCase().startsWith("LOGOUT")) {
                     System.exit(0);
                 }

@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>Martin.Lodahl</groupId>
-    <artifactId>webDocumentation</artifactId>
+    <artifactId>CA2Documentation</artifactId>
     <version>1</version>
     <packaging>war</packaging>
 
-    <name>webDocumentation</name>
+    <name>CA2Documentation</name>
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
