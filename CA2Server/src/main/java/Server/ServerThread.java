@@ -1,6 +1,8 @@
 package Server;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
@@ -11,6 +13,7 @@ public class ServerThread implements Runnable {
     private PrintWriter clientOut;
     private ChatServer server;
     private String clientName;
+    private BufferedReader in;
 
     public ServerThread(ChatServer server, Socket socket) {
         this.server = server;
@@ -25,40 +28,39 @@ public class ServerThread implements Runnable {
     public void run() {
         try {
             this.clientOut = new PrintWriter(socket.getOutputStream(), false);
-            Scanner in = new Scanner(socket.getInputStream());
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            while (!socket.isClosed()) {
-                if (in.hasNextLine()) {
-                    String input = in.nextLine();
-                    /* retrive the client name, and send a list containing all the connected
+            while (true) {
+                String input = in.readLine();
+                /* retrive the client name, and send a list containing all the connected
                     clients. */
-                    if (input.toUpperCase().startsWith("LOGIN:") && clientName == null) {
-                        clientName = input.substring(6);
-                        System.out.println("user IP: " + socket.getRemoteSocketAddress() + " changed name to: " + clientName);
-                        input = server.toStringClientList();
-                        for (ServerThread thatClient : server.getClients()) {
-                            PrintWriter thatClientOut = thatClient.getWriter();
-                            if (thatClientOut != null) {
-                                thatClientOut.write(input + "\r\n");
-                                thatClientOut.flush();
-                            }
+                if (input.toUpperCase().startsWith("LOGIN:") && clientName == null) {
+                    clientName = input.substring(6);
+                    System.out.println("user IP: " + socket.getRemoteSocketAddress() + " changed name to: " + clientName);
+                    input = server.toStringClientList();
+                    for (ServerThread thatClient : server.getClients()) {
+                        PrintWriter thatClientOut = thatClient.getWriter();
+                        if (thatClientOut != null) {
+                            thatClientOut.write(input + "\r\n");
+                            thatClientOut.flush();
                         }
+                    }
 
-                    } // Sends a message to all the active clients.
-                    else if (input.toUpperCase().startsWith("MSG:*:")) {
-                        for (ServerThread thatClient : server.getClients()) {
-                            PrintWriter thatClientOut = thatClient.getWriter();
-                            String[] message = input.split(":",3);
-                            if (thatClientOut != null) {
-                                thatClientOut.write("MSGRES:" + clientName + ":" + message[2] + "\r\n");
-                                thatClientOut.flush();
-                            }
+                } // Sends a message to all the active clients.
+                else if (input.toUpperCase().startsWith("MSG:*:")) {
+                    for (ServerThread thatClient : server.getClients()) {
+                        PrintWriter thatClientOut = thatClient.getWriter();
+                        String[] message = input.split(":", 3);
+                        if (thatClientOut != null) {
+                            thatClientOut.write("MSGRES:" + clientName + ":" + message[2] + "\r\n");
+                            thatClientOut.flush();
                         }
-                    } // Sends a message to the clients which are parsed in as parameter
-                    else if (input.toUpperCase().startsWith("MSG:")) {
-                        //MSG: NAMES : MESSAGE
-                        String[] semiSplit = input.split(":",3);
-                        if(semiSplit.length == 3){
+                    }
+                } // Sends a message to the clients which are parsed in as parameter
+                else if (input.toUpperCase().startsWith("MSG:")) {
+                    //MSG: NAMES : MESSAGE
+                    String[] semiSplit = input.split(":", 3);
+                    if (semiSplit.length == 3) {
                         String[] receivers = semiSplit[1].split(",");
                         input = semiSplit[2];
                         for (ServerThread thatClient : server.getClients()) {
@@ -73,28 +75,17 @@ public class ServerThread implements Runnable {
                                 }
                             }
                         }
-                        }
-                        else{
-                           clientOut.write("MSGRES:SERVER: The message format is incorrect. \r\n");
-                           clientOut.flush(); 
-                        }
-                    } else if (input.toUpperCase().startsWith("LOGOUT:")) {
-                        server.removeClient(this);
-                        input = server.toStringClientList();
-                        for (ServerThread thatClient : server.getClients()) {
-                            PrintWriter thatClientOut = thatClient.getWriter();
-                            if (thatClientOut != null) {
-                                thatClientOut.write(input + "\r\n");
-                                thatClientOut.flush();
-                            }
-                        }
-                        break;
                     } else {
-                        clientOut.println("MSGRES:SERVER: The message format is incorrect. ");
+                        clientOut.write("MSGRES:SERVER: The message format is incorrect. \r\n");
+                        clientOut.flush();
                     }
+                } else if (input.toUpperCase().startsWith("LOGOUT:")) {
+                    break;
+                } else {
+                    clientOut.println("MSGRES:SERVER: The message format is incorrect. ");
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             server.removeClient(this);
