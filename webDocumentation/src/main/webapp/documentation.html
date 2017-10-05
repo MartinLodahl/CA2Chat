@@ -11,16 +11,29 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <div>TODO write content</div>
+        <div>
 
-        <!Documentation for your tests against another groups  client and server  including a description on what went well and what did not
-        A description on how you designed the system
-        A description on how to use the system
-        A section stating who worked on what in your group
-        !>
-        <a href="https://github.com/MartinLodahl/CA2Chat/tree/master/CA2Server">Chat Server</a><br>
-        <a href="https://github.com/MartinLodahl/CA2Chat/tree/master/ChatServer/src/main/java/Client">Client Code</a><br>
-        <a href="https://github.com/MartinLodahl/CA2Chat/tree/master/ChatServer/src/main/java/GUI">Client GUI</a><br>
-        
-</body>
+            <!Documentation for your tests against another groups  client and server  including a description on what went well and what did not
+                A description on how you designed the system
+                A description on how to use the system
+                A section stating who worked on what in your group
+                !>
+
+            <p>How to use the system:</p>
+            <p>Download our chat client (GUI), write a name, and you're started</p>
+            <p>You can type 'msg:<*names*>:message', to type to specific people.</p>
+            <p>Otherwise you can just type something in, and the GUI will tell the server to write to all</p>
+            <p>Type logout: to logout</p>
+
+            <p>Without our GUI, you can call login:<*username*>, to set your name, note you can only do it once per client</p>
+            <p>You can write MSG:<*receivers*>:<*message*>, where you're splitting receivers by ','s. You can write to one, many or use '*' to write to all</p>
+            <p>You'll receive answers from the server in the format MSGRES:<*sender*>:<*message*>.</p>
+            <p>You'll get a client list everytime a person logs off or on the server.</p>
+            <p>Type 'logout:' to logout from the server </p>
+
+            <a href="https://github.com/MartinLodahl/CA2Chat/tree/master/CA2Server">Chat Server</a><br>
+            <a href="https://github.com/MartinLodahl/CA2Chat/tree/master/ChatServer/src/main/java/Client">Client Code</a><br>
+            <a href="https://github.com/MartinLodahl/CA2Chat/tree/master/ChatServer/src/main/java/GUI">Client GUI</a><br>
+        </div>
+    </body>
 </html>
