@@ -30,7 +30,7 @@ public class ServerThread implements Runnable {
 
             while (true) {
                 String input = in.readLine();
-                System.out.println("User IP: " + socket.getRemoteSocketAddress() + " Debugging: " + input);
+                //System.out.println("User IP: " + socket.getRemoteSocketAddress() + " Debugging: " + input);
                 /* retrive the client name, and send a list containing all the connected
                     clients. */
                 if (input.toUpperCase().startsWith("CLIENTS:")) {
