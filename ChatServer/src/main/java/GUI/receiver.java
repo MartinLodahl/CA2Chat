@@ -25,7 +25,9 @@ private Socket socket;
 
             while (!socket.isClosed()) {
                 if (serverInStream.available() > 0) {
+                    System.out.println("Found something!");
                     if (serverIn.hasNextLine()) {
+                        System.out.println("received a msg!");
                         gui.updateChatBox(serverIn.nextLine());
                     }
                 }

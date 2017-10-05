@@ -13,6 +13,8 @@ import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,8 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 public class MainGUI {
 
@@ -36,6 +36,7 @@ public class MainGUI {
     JTextField usernameChooser;
     JFrame preFrame;
 
+
     //fix later
     private static final String host = "www.alfen.me";
     private static final int portNumber = 8081;
@@ -46,17 +47,22 @@ public class MainGUI {
     private Socket socket;
     private ExecutorService es;
     private ArrayBlockingQueue<String> msgSend;
-    private ArrayBlockingQueue<String> msgRecived;
 
     public MainGUI() throws IOException {
+        mainGUI = this;
         serverHost = host;
         serverPort = portNumber;
         socket = new Socket(serverHost, serverPort);
         es = Executors.newFixedThreadPool(2);
         msgSend = new ArrayBlockingQueue(5);
-        msgRecived = new ArrayBlockingQueue(5);
     }
-
+    
+    public static void main(String[] args) throws IOException {
+                    MainGUI mainGUI = new MainGUI();
+                    mainGUI.preDisplay();
+    }
+    
+    /*
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -73,7 +79,7 @@ public class MainGUI {
             }
         });
     }
-
+    */
     public void preDisplay() {
         newFrame.setVisible(false);
         preFrame = new JFrame(appName);
@@ -146,12 +152,8 @@ public class MainGUI {
         newFrame.setVisible(true);
     }
 
-    public void updateChatBox(String username, String msg) {
-        chatBox.append("<" + username + ">" + "<" + msg + "> /r/n");
-    }
-
     public void updateChatBox(String msg) {
-        chatBox.append("<" + username + ">" + "<" + msg + "> /r/n");
+        chatBox.append(msg + "\n");
     }
 
     class sendMessageButtonListener implements ActionListener {
@@ -164,9 +166,14 @@ public class MainGUI {
                 chatBox.setText("Cleared all messages\n");
                 messageBox.setText("");
             } else {
-                chatBox.append("<" + username + ">:  " + messageBox.getText()
-                        + "\n");
+                try {
+                    msgSend.put(messageBox.getText());
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
                 messageBox.setText("");
+                
             }
             messageBox.requestFocusInWindow();
         }
@@ -180,9 +187,8 @@ public class MainGUI {
             if (username.length() < 1) {
                 JOptionPane.showMessageDialog(null, "Please type a username...");
             } else {
-                Thread t1 = new Thread(new receiver(socket, mainGUI));
-                es.execute(t1);
-                es.execute(new sendGui(socket, msgSend));
+                es.execute(new receiver(socket, MainGUI.this));
+                es.execute(new sendGui(socket, msgSend, username));
                 preFrame.setVisible(false);
                 display();
             }

@@ -13,7 +13,7 @@ public class sendGui implements Runnable {
 
     private PrintWriter serverOut;
 
-    public sendGui(Socket socket, ArrayBlockingQueue messagesToSend) {
+    public sendGui(Socket socket, ArrayBlockingQueue messagesToSend, String username) {
         this.socket = socket;
         this.messagesToSend = messagesToSend;
 
@@ -22,6 +22,8 @@ public class sendGui implements Runnable {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        serverOut.println("login:"+username);
+        serverOut.flush();
     }
 
     @Override
@@ -29,11 +31,17 @@ public class sendGui implements Runnable {
         while (!socket.isClosed()) {
             try {
                 nextSend = messagesToSend.take();
+               
+                if(!nextSend.contains(":")){
+                    nextSend = "msg:*:" + nextSend;
+                }
+                
                 serverOut.println(nextSend);
                 serverOut.flush();
-
+                
+                System.out.println("send a msg!");
+                
                 if (nextSend.toUpperCase().startsWith("LOGOUT")) {
-                    serverOut.flush();
                     System.exit(0);
                 }
             } catch (InterruptedException ex) {
