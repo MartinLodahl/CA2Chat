@@ -1,11 +1,11 @@
-package GUI;
+package GUI2;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 
-public class sendGui implements Runnable {
+public class SendGUI implements Runnable {
 
     private Socket socket;
     private ArrayBlockingQueue<String> messagesToSend;
@@ -13,7 +13,7 @@ public class sendGui implements Runnable {
 
     private PrintWriter serverOut;
 
-    public sendGui(Socket socket, ArrayBlockingQueue messagesToSend, String username) {
+    public SendGUI(Socket socket, ArrayBlockingQueue messagesToSend, String username) {
         this.socket = socket;
         this.messagesToSend = messagesToSend;
 

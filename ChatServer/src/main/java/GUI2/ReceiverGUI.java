@@ -1,16 +1,17 @@
-package GUI;
+package GUI2;
 
+import GUI2.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class receiver implements Runnable{
+public class ReceiverGUI implements Runnable {
 
-private Socket socket;
+    private Socket socket;
     private MainGUI gui;
 
-    public receiver(Socket socket, MainGUI gui) {
+    public ReceiverGUI(Socket socket, MainGUI gui) {
         this.gui = gui;
         this.socket = socket;
     }
@@ -27,15 +28,15 @@ private Socket socket;
                 if (serverInStream.available() > 0) {
                     if (serverIn.hasNextLine()) {
                         String input = serverIn.nextLine();
-                        String[] inputSplit = input.split(":",3);
-                        
+                        String[] inputSplit = input.split(":", 3);
+
                         for (String str : inputSplit) {
                             System.out.println(str);
                         }
-                        
-                        switch(inputSplit[0].toUpperCase()){
+
+                        switch (inputSplit[0].toUpperCase()) {
                             case "MSGRES":
-                                gui.updateChatBox("<"+inputSplit[1]+">"+inputSplit[2]);
+                                gui.updateChatBox("<" + inputSplit[1] + ">" + inputSplit[2]);
                                 break;
                             default:
                                 gui.updateChatBox(input);
@@ -48,5 +49,5 @@ private Socket socket;
             ex.printStackTrace();
         }
     }
-    
+
 }
