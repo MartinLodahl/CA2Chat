@@ -12,7 +12,23 @@ and open the template in the editor.
     </head>
     <body>
         <div>
+            <a>The main system is divided into 3 major parts. We have the server, client and GUI. <br>
 
+                The server which can be found in … consist of 2 classes. The first class is called “ChatServer”, this can be located in the package Server. <br>
+                This class is the main server, it performs 2 tasks.<br>
+                The first task is to start the server at port 8081. The second task is to listen for clients that might connect to the server and assign a socket-Thread to each client.<br>
+                By assigning a new socket-thread to each client, the server is able to handle multiple clients at once.<br>
+                The second class which can be found in the Server package is “ServerThread”. This class has one job and that is to send a response to the clients request.<br><br>
+
+
+
+
+
+                The client consists of 2 classes, Client and ClientThread. <br> Client have to get the username, then to start a ClientThread and afterwards listening through a scanner, when the user writes something. <br> For then to put it in a LinkedList, so the ClientThread will write the message to the server, next time it gets to the part in its while loop, that writes to the server. (Should happen almost instantly, unless there are A LOT of message to write from the server). <br>
+                The ClientThreads job is to print and write between the client and the server, using a socket. <br>If the socket closes, the ClientThread should stop working aswell, also causing the Client to close down.<br><br>
+
+                The GUI consists of 3 classes, the MainGUI which includes the visual parts of the GUI, a method to write into the chatbox, and a few eventlisteners doing something when triggered (e.g. sending a message). <br>The receiver, which constantly listens to the server for new messages, if there is a new message then appending it to the GUI chatbox. <br>And a sendGUI, which sends messages written in the GUI to the server client, attached to the GUIs socket. <br>
+            </a>
             <!Documentation for your tests against another groups  client and server  including a description on what went well and what did not
                 A description on how you designed the system
                 A section stating who worked on what in your group
