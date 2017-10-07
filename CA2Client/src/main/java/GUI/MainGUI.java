@@ -417,6 +417,7 @@ public class MainGUI extends javax.swing.JFrame {
         }
         socket = null;
         es = null;
+        currentConLabel.setText("N/A");
         clearOnlineList();
         clearReceiverList();
     }//GEN-LAST:event_DisconnectBtnActionPerformed
